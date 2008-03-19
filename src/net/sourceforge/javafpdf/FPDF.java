@@ -1,4 +1,4 @@
-/* $Id: FPDF.java,v 1.10 2008/03/19 17:08:40 ashmodai Exp $
+/* $Id$
  * (K) 2008 All Rites Reversed -- Reprint what you like.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -44,7 +44,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * @author Olivier Plathey
  * @author Alan Plum
  * @since 1 Mar 2008
- * @version 1.53 / $Revision: 1.10 $
+ * @version 1.53 / $Rev$
  */
 public abstract class FPDF {
 	/** Character width. Used to be global. */
@@ -237,9 +237,9 @@ public abstract class FPDF {
 	private static final String						revision;
 
 	static {
-		// Some CVS magic to find out the revision of this class
-		String rev = "$Revision: 1.10 $"; //$NON-NLS-1$
-		revision = rev.substring(11, rev.length() - 2);
+		// Some SVN magic to find out the revision of this class
+		String rev = "$Rev$"; //$NON-NLS-1$
+		revision = rev.substring(6, rev.length() - 2);
 	}
 
 	/**

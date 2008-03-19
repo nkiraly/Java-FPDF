@@ -5,7 +5,7 @@ package net.sourceforge.javafpdf;
  * 
  * @author Alan Plum
  * @since 4 Mar 2008
- * @version $Revision: 1.3 $
+ * @version $Rev$
  */
 public class Format {
 	protected static final float	mm			= FPDF.MM;
