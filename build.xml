@@ -1,5 +1,6 @@
 <project name="Java FPDF" basedir="." default="main">
 	<property name="tempdir" value="build"/>
+	<mkdir dir="${tempdir}"/>
 	<exec executable="svn" output="${tempdir}/svn.properties">
 		<arg value="info"/>
 	</exec>
