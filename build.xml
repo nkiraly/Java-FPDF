@@ -2,8 +2,9 @@
 	<exec executable="svn" output="svn.properties">
 		<arg value="info"/>
 	</exec>
+	<property name="project" value="fpdf-1.53"/>
 	<property prefix="svn" file="svn.properties"/>
-	<property name="name" value="fpdf-1.53.${svn.Revision}"/>
+	<property name="name" value="${project}.${svn.Revision}"/>
 	<target name="clean">
 		<delete dir="${name}"/>
 		<delete file="svn.properties"/>
@@ -18,7 +19,7 @@
 		<javac srcdir="src" destdir="${name}/classes"/>
 	</target>
 	<target name="jar" depends="compile">
-		<jar destfile="${name}.jar" basedir="${name}/classes"/>
+		<jar destfile="${project}.jar" basedir="${name}/classes"/>
 		<delete dir="${name}/classes"/>
 	</target>
 	<target name="javadoc">
@@ -26,7 +27,7 @@
 		<javadoc sourcepath="src" destdir="${name}/docs"/>
 	</target>
 	<target name="zip" depends="jar,javadoc">
-		<move file="${name}.jar" todir="${name}"/>
+		<copy file="${project}.jar" todir="${name}"/>
 		<zip zipfile="${name}.zip" basedir="${name}"/>
 		<zip zipfile="${name}-src.zip" basedir="src"/>
 	</target>
