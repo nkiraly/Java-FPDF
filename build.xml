@@ -18,15 +18,15 @@
 		<javac srcdir="src" destdir="${name}/classes"/>
 	</target>
 	<target name="jar" depends="compile">
-		<jar destfile="${name}/${name}.jar" basedir="${name}/classes"/>
+		<jar destfile="${name}.jar" basedir="${name}/classes"/>
 		<delete dir="${name}/classes"/>
 	</target>
 	<target name="javadoc">
 		<mkdir dir="${name}/docs"/>
-		<javadoc sourcepath="src" destdir="${name}/docs" />
+		<javadoc sourcepath="src" destdir="${name}/docs"/>
 	</target>
 	<target name="zip" depends="jar,javadoc">
-		<delete file="${name}.zip"/>
+		<move file="${name}.jar" todir="${name}"/>
 		<zip zipfile="${name}.zip" basedir="${name}"/>
 		<zip zipfile="${name}-src.zip" basedir="src"/>
 	</target>
