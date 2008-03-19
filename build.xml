@@ -1,0 +1,29 @@
+<project name="Java FPDF" basedir="." default="main">
+	<property name="name" value="fpdf-1.53"/>
+	<target name="clean">
+		<delete dir="${name}"/>
+	</target>
+	<target name="compile">
+		<mkdir dir="${name}/classes"/>
+		<copy file="README.txt" todir="${name}"/>
+		<copy file="LICENSE.txt" todir="${name}"/>
+		<copy todir="${name}/classes/net/sourceforge/javafpdf/fonts">
+			<fileset dir="src/net/sourceforge/javafpdf/fonts" excludes="**/*.java"/>
+		</copy>
+		<javac srcdir="src" destdir="${name}/classes"/>
+	</target>
+	<target name="jar" depends="compile">
+		<jar destfile="${name}/${name}.jar" basedir="${name}/classes"/>
+		<delete dir="${name}/classes"/>
+	</target>
+	<target name="javadoc">
+		<mkdir dir="${name}/docs"/>
+		<javadoc sourcepath="src" destdir="${name}/docs" />
+	</target>
+	<target name="zip" depends="jar,javadoc">
+		<delete file="${name}.zip"/>
+		<zip zipfile="${name}.zip" basedir="${name}"/>
+		<zip zipfile="${name}-src.zip" basedir="src"/>
+	</target>
+	<target name="main" depends="zip"/>
+</project>

@@ -1,0 +1,10 @@
+test
+.settings
+.classpath
+.project
+.cvsignore
+*.pdf
+*.png
+.externalToolBuilders
+*.zip
+fpdf-1.53
