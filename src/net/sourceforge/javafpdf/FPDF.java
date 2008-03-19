@@ -826,7 +826,7 @@ public abstract class FPDF {
 
 	protected void _putinfo() {
 		this._out("/Producer " //$NON-NLS-1$
-				+ this._textstring("Java FPDF 1.53 / " //$NON-NLS-1$
+				+ this._textstring("Java FPDF 1.53." //$NON-NLS-1$
 						+ revision));
 		if (this.title != null) {
 			this._out("/Title " + this._textstring(this.title)); //$NON-NLS-1$
