@@ -4,7 +4,6 @@
 		<arg value="info"/>
 	</exec>
 	<property prefix="svn" file="${tempdir}/svn.properties"/>
-	<delete file="${tempdir}/svn.properties"/>
 	<property name="project" value="fpdf-1.53"/>
 	<property name="distro" value="${project}.${svn.Revision}"/>
 	
@@ -29,6 +28,7 @@
 	</target>
 	
 	<target name="distro" depends="jar,javadoc">
+		<delete file="${tempdir}/svn.properties"/>
 		<copy file="${project}.jar" todir="${tempdir}"/>
 		<delete file="${distro}.zip"/>
 		<zip zipfile="${distro}.zip" basedir="${tempdir}"/>
