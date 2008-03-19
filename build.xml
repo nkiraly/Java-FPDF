@@ -1,7 +1,12 @@
 <project name="Java FPDF" basedir="." default="main">
-	<property name="name" value="fpdf-1.53"/>
+	<exec executable="svn" output="svn.properties">
+		<arg value="info"/>
+	</exec>
+	<property prefix="svn" file="svn.properties"/>
+	<property name="name" value="fpdf-1.53.${svn.Revision}"/>
 	<target name="clean">
 		<delete dir="${name}"/>
+		<delete file="svn.properties"/>
 	</target>
 	<target name="compile">
 		<mkdir dir="${name}/classes"/>
@@ -25,5 +30,5 @@
 		<zip zipfile="${name}.zip" basedir="${name}"/>
 		<zip zipfile="${name}-src.zip" basedir="src"/>
 	</target>
-	<target name="main" depends="zip"/>
+	<target name="main" depends="zip,clean"/>
 </project>
