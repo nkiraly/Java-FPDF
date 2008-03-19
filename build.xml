@@ -1,35 +1,44 @@
 <project name="Java FPDF" basedir="." default="main">
-	<exec executable="svn" output="svn.properties">
+	<property name="tempdir" value="build"/>
+	<exec executable="svn" output="${tempdir}/svn.properties">
 		<arg value="info"/>
 	</exec>
+	<property prefix="svn" file="${tempdir}/svn.properties"/>
+	<delete file="${tempdir}/svn.properties"/>
 	<property name="project" value="fpdf-1.53"/>
-	<property prefix="svn" file="svn.properties"/>
-	<property name="name" value="${project}.${svn.Revision}"/>
-	<target name="clean">
-		<delete dir="${name}"/>
-		<delete file="svn.properties"/>
-	</target>
+	<property name="distro" value="${project}.${svn.Revision}"/>
+	
 	<target name="compile">
-		<mkdir dir="${name}/classes"/>
-		<copy file="README.txt" todir="${name}"/>
-		<copy file="LICENSE.txt" todir="${name}"/>
-		<copy todir="${name}/classes/net/sourceforge/javafpdf/fonts">
+		<mkdir dir="${tempdir}/classes"/>
+		<copy file="README.txt" todir="${tempdir}"/>
+		<copy file="LICENSE.txt" todir="${tempdir}"/>
+		<copy todir="${tempdir}/classes/net/sourceforge/javafpdf/fonts">
 			<fileset dir="src/net/sourceforge/javafpdf/fonts" excludes="**/*.java"/>
 		</copy>
-		<javac srcdir="src" destdir="${name}/classes"/>
+		<javac srcdir="src" destdir="${tempdir}/classes"/>
 	</target>
+	
 	<target name="jar" depends="compile">
-		<jar destfile="${project}.jar" basedir="${name}/classes"/>
-		<delete dir="${name}/classes"/>
+		<jar destfile="${project}.jar" basedir="${tempdir}/classes"/>
+		<delete dir="${tempdir}/classes"/>
 	</target>
+	
 	<target name="javadoc">
-		<mkdir dir="${name}/docs"/>
-		<javadoc sourcepath="src" destdir="${name}/docs"/>
+		<mkdir dir="${tempdir}/docs"/>
+		<javadoc sourcepath="src" destdir="${tempdir}/docs"/>
 	</target>
-	<target name="zip" depends="jar,javadoc">
-		<copy file="${project}.jar" todir="${name}"/>
-		<zip zipfile="${name}.zip" basedir="${name}"/>
-		<zip zipfile="${name}-src.zip" basedir="src"/>
+	
+	<target name="distro" depends="jar,javadoc">
+		<copy file="${project}.jar" todir="${tempdir}"/>
+		<delete file="${distro}.zip"/>
+		<zip zipfile="${distro}.zip" basedir="${tempdir}"/>
+		<delete file="${distro}-src.zip"/>
+		<zip zipfile="${distro}-src.zip" basedir="src"/>
 	</target>
-	<target name="main" depends="zip,clean"/>
+	
+	<target name="clean">
+		<delete dir="${tempdir}"/>
+	</target>
+	
+	<target name="main" depends="distro,clean"/>
 </project>
