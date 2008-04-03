@@ -1978,7 +1978,7 @@ public abstract class FPDF {
 		float w1 = (w == 0) ? this.w - this.rMargin - this.x : w;
 		Charwidths cw = this.currentFont.getCw();
 		float wmax = (w1 - 2 * this.cMargin) * 1000 / this.fontSize;
-		String s = txt.replace("\r", ""); //$NON-NLS-1$//$NON-NLS-2$
+		String s = (txt == null) ? "" : txt.replace("\r", ""); //$NON-NLS-1$//$NON-NLS-2$
 		int nb = s.length();
 		if ((nb > 0) && (s.charAt(nb - 1) == '\n')) {
 			nb--;
