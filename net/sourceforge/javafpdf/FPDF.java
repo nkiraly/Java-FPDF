@@ -1946,6 +1946,7 @@ public abstract class FPDF {
 	/** Line feed; default value is last cell height */
 	public void Ln(final float h) {
 		this.y += h;
+		this.x = this.lMargin;
 	}
 
 	/**
