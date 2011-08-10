@@ -36,8 +36,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * Faithful Java port of <a href="http://www.fpdf.org">FPDF for PHP</a>.
  * 
