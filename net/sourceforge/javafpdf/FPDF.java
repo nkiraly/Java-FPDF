@@ -1370,7 +1370,7 @@ public abstract class FPDF {
 					"%.2f %.2f %.2f %.2f re %s ", //$NON-NLS-1$
 					Float.valueOf(this.x * k), Float.valueOf((this.h - this.y)
 							* k), Float.valueOf(w1 * k), Float.valueOf(-h * k),
-					Float.valueOf(op)));
+					op));
 		}
 		if (border != null) {
 			x = this.x;
