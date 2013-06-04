@@ -983,15 +983,13 @@ public abstract class FPDF {
 
 	private String _stringifyzip(byte[] buffer) {
 		try {
-			return new String(buffer, "iso-8859-1");
+			return new String(buffer, "US-ASCII");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private byte[] gzcompress(List<byte[]> list) {
+	private byte[] gzcompress(List<byte[]> buffer) {
 		int length = 0;
 		for (byte[] b : buffer) {
 			length += b.length;
