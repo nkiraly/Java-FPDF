@@ -564,7 +564,12 @@ public abstract class FPDF {
 	protected void _out(final String s) {
 		// Add a line to the document
 		if (this.state == PDFCreationState.PAGE) {
-			this.pages.get(Integer.valueOf(this.page)).add((s + '\n').getBytes());
+			try {
+				this.pages.get(Integer.valueOf(this.page)).add((s + '\n').getBytes("ISO-8859-1"));
+			} catch (UnsupportedEncodingException e) {
+				this.pages.get(Integer.valueOf(this.page)).add((s + '\n').getBytes());
+				e.printStackTrace();
+			}
 		} else {
 			/*
 			 * NOTE This is a hack put in place because Java converts to true
@@ -578,6 +583,7 @@ public abstract class FPDF {
 				this.buffer.add((s.replace('€', (char) 128) + '\n').getBytes("ISO-8859-1")); //$NON-NLS-1$
 			} catch (UnsupportedEncodingException e) {
 				this.buffer.add((s.replace('€', (char) 128) + '\n').getBytes());
+				e.printStackTrace();
 			}
 		}
 	}
@@ -983,7 +989,7 @@ public abstract class FPDF {
 
 	private String _stringifyzip(byte[] buffer) {
 		try {
-			return new String(buffer, "US-ASCII");
+			return new String(buffer, "ISO-8859-1");
 		} catch (UnsupportedEncodingException e) {
 		}
 		return null;
@@ -1002,7 +1008,8 @@ public abstract class FPDF {
 			}
 			offset += b.length;
 		}
-		return gzcompress(bytes);
+		byte[] result = gzcompress(bytes);
+		return result;
 	}
 
 	protected void _putresourcedict() {
