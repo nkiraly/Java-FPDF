@@ -1,4 +1,4 @@
-package net.sourceforge.javafpdf.util;
+package com.koadweb.javafpdf.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

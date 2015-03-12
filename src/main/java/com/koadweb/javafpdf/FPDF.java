@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.sourceforge.javafpdf;
+package com.koadweb.javafpdf;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -40,7 +40,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import net.sourceforge.javafpdf.util.Compressor;
+import com.koadweb.javafpdf.util.Compressor;
 
 /**
  * Faithful Java port of <a href="http://www.fpdf.org">FPDF for PHP</a>.

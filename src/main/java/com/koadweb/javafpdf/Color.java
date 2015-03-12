@@ -1,4 +1,4 @@
-/* $Id: Coordinate.java,v 1.1 2008/03/05 14:37:20 ashmodai Exp $
+/* $Id: Color.java,v 1.1 2008/03/05 14:37:20 ashmodai Exp $
  * (K) 2008 All Rites Reversed -- Reprint what you like.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,61 +19,93 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.sourceforge.javafpdf;
+package com.koadweb.javafpdf;
 
 /**
- * A two-dimensional coordinate.
+ * DOCME
  * 
- * @author Alan Plum
+ * @author pluma
  * @since 5 Mar 2008
  * @version $Revision: 1.1 $
  */
-public class Coordinate {
-	private final float	x;
+public class Color {
+	private final int	r;
 
-	private final float	y;
+	private final int	g;
+
+	private final int	b;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param x
-	 *            the x position
-	 * @param y
-	 *            the y position
+	 * @param r
+	 *            the red
+	 * @param g
+	 *            the green
+	 * @param b
+	 *            the blue
 	 */
-	public Coordinate(final float x, final float y) {
-		this.x = x;
-		this.y = y;
+	public Color(final int r, final int g, final int b) {
+		this.r = r % 256;
+		this.g = g % 256;
+		this.b = b % 256;
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor. Creates a grayscale color.
 	 * 
-	 * @param x
-	 *            the x position
-	 * @param y
-	 *            the y position
+	 * @param v
+	 *            the value
 	 */
-	public Coordinate(final double x, final double y) {
-		this.x = (float) x;
-		this.y = (float) y;
+	public Color(final int v) {
+		this.r = v % 256;
+		this.g = v % 256;
+		this.b = v % 256;
 	}
 
 	/**
 	 * DOCME
 	 * 
-	 * @return the x
+	 * @return the value
 	 */
-	public float getX() {
-		return this.x;
+	public int getV() {
+		return (this.r + this.g + this.b) / 3;
+	}
+
+	/**
+	 * Checks whether the color is grayscale.
+	 * 
+	 * @return <code>true</code> if all three colors are identical;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean isGrayscale() {
+		return ((this.r == this.g) && (this.g == this.b));
 	}
 
 	/**
 	 * DOCME
 	 * 
-	 * @return the y
+	 * @return the red
 	 */
-	public float getY() {
-		return this.y;
+	public int getR() {
+		return this.r;
+	}
+
+	/**
+	 * DOCME
+	 * 
+	 * @return the green
+	 */
+	public int getG() {
+		return this.g;
+	}
+
+	/**
+	 * DOCME
+	 * 
+	 * @return the blue
+	 */
+	public int getB() {
+		return this.b;
 	}
 }

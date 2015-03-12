@@ -1,4 +1,4 @@
-/* $Id: ScaleMode.java,v 1.1 2008/03/05 14:37:20 ashmodai Exp $
+/* $Id: Position.java,v 1.1 2008/03/05 14:37:20 ashmodai Exp $
  * (K) 2008 All Rites Reversed -- Reprint what you like.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,18 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.sourceforge.javafpdf;
+package com.koadweb.javafpdf;
 
 /**
- * DOCME
+ * Position to place the pointer after a call.
  * 
- * @author pluma
+ * @author Alan Plum
  * @since 5 Mar 2008
  * @version $Revision: 1.1 $
  */
-public enum ScaleMode {
-	/** Character spacing. */
-	CHARSPACE,
-	/** Horizontal scaling. */
-	HORIZONTAL;
+public enum Position {
+	/** To the right of the last position. */
+	RIGHTOF,
+	/** Insert a line break. */
+	NEXTLINE,
+	/** Place the pointer below the last position. */
+	BELOW;
 }

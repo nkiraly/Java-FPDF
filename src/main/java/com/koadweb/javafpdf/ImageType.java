@@ -1,4 +1,4 @@
-/* $Id: DrawMode.java,v 1.1 2008/03/05 14:37:20 ashmodai Exp $
+/* $Id: ImageType.java,v 1.1 2008/03/05 14:37:20 ashmodai Exp $
  * (K) 2008 All Rites Reversed -- Reprint what you like.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,36 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.sourceforge.javafpdf;
+package com.koadweb.javafpdf;
 
 /**
  * DOCME
  * 
- * @author pluma
+ * @author Alan Plum
  * @since 5 Mar 2008
  * @version $Revision: 1.1 $
  */
-public enum DrawMode {
-	/** Draw the outline. */
-	SHAPE('S'),
-	/** Fill the area. */
-	FILLED('f'),
-	/** Draw both. */
-	BOTH('B'),
-	/** Draw the closed outline (ellipses only). */
-	CLOSED('s');
-	private final char	op;
-
-	private DrawMode(final char op) {
-		this.op = op;
-	}
-
-	/**
-	 * Gets the operation code.
-	 * 
-	 * @return the opcode.
-	 */
-	public char getOp() {
-		return this.op;
-	}
+public enum ImageType {
+	/** Portable Network Graphics image. */
+	PNG,
+	/** Joint Photographic Experts Group image. */
+	JPEG;
 }

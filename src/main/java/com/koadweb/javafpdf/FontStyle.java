@@ -1,4 +1,4 @@
-/* $Id: Position.java,v 1.1 2008/03/05 14:37:20 ashmodai Exp $
+/* $Id: FontStyle.java,v 1.1 2008/03/07 09:43:07 ashmodai Exp $
  * (K) 2008 All Rites Reversed -- Reprint what you like.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,20 +19,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.sourceforge.javafpdf;
+package com.koadweb.javafpdf;
 
 /**
- * Position to place the pointer after a call.
+ * DOCME
  * 
  * @author Alan Plum
- * @since 5 Mar 2008
+ * @since 7 Mar 2008
  * @version $Revision: 1.1 $
  */
-public enum Position {
-	/** To the right of the last position. */
-	RIGHTOF,
-	/** Insert a line break. */
-	NEXTLINE,
-	/** Place the pointer below the last position. */
-	BELOW;
+public enum FontStyle {
+	/** Boldface. */
+	BOLD('B'),
+	/** Italized. */
+	ITALIC('I'),
+	/** Underlined. */
+	UNDERLINE('U');
+	private char	op;
+
+	private FontStyle(final char op) {
+		this.op = op;
+	}
+
+	/**
+	 * Gets the opcode.
+	 * 
+	 * @return the opcode.
+	 */
+	public char getOp() {
+		return this.op;
+	}
 }

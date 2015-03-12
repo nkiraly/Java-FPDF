@@ -1,4 +1,4 @@
-package net.sourceforge.javafpdf;
+package com.koadweb.javafpdf;
 
 /**
  * Page format with rectangular dimensions.

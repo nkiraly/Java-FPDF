@@ -1,4 +1,4 @@
-package net.sourceforge.javafpdf;
+package com.koadweb.javafpdf;
 
 public class PDFCreationError extends IllegalArgumentException {
 	private static final long serialVersionUID = 1L;
