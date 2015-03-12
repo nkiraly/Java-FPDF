@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: Charwidths.java,v 1.3 2008/03/06 17:48:04 ashmodai Exp $
  * (K) 2008 All Rites Reversed -- Reprint what you like.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +32,7 @@ import java.util.Properties;
  * 
  * @author Alan Plum
  * @since 4 Mar 2008
- * @version $Rev$
+ * @version $Revision: 1.3 $
  */
 class Charwidths {
 	private final Properties	props;

@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: Alignment.java,v 1.2 2008/03/05 14:37:20 ashmodai Exp $
  * (K) 2008 All Rites Reversed -- Reprint what you like.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,7 @@ package net.sourceforge.javafpdf;
  * 
  * @author Alan Plum
  * @since 4 Mar 2008
- * @version $Rev$
+ * @version $Revision: 1.2 $
  */
 public enum Alignment {
 	/** Left alignment. */

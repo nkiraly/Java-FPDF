@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: LineStyle.java,v 1.1 2008/03/05 14:37:20 ashmodai Exp $
  * (K) 2008 All Rites Reversed -- Reprint what you like.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,7 @@ package net.sourceforge.javafpdf;
  * 
  * @author Alan Plum
  * @since 5 Mar 2008
- * @version $Rev$
+ * @version $Revision: 1.1 $
  */
 public class LineStyle {
 	/**
@@ -34,7 +34,7 @@ public class LineStyle {
 	 * 
 	 * @author Alan Plum
 	 * @since 5 Mar 2008
-	 * @version $Rev$
+	 * @version $Revision: 1.1 $
 	 */
 	public static enum Cap {
 		/** Butt. */
@@ -64,7 +64,7 @@ public class LineStyle {
 	 * 
 	 * @author Alan Plum
 	 * @since 5 Mar 2008
-	 * @version $Rev$
+	 * @version $Revision: 1.1 $
 	 */
 	public static enum Join {
 		/** Miter. */

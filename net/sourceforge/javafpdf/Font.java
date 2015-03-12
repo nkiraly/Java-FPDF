@@ -5,7 +5,7 @@ package net.sourceforge.javafpdf;
  * 
  * @author Alan Plum
  * @since 4 Mar 2008
- * @version $Rev$
+ * @version $Revision: 1.2 $
  */
 class Font {
 	/**
@@ -13,7 +13,7 @@ class Font {
 	 * 
 	 * @author Alan Plum
 	 * @since 4 Mar 2008
-	 * @version $Rev$
+	 * @version $Revision: 1.2 $
 	 */
 	protected static enum Type {
 		/** Core font. */

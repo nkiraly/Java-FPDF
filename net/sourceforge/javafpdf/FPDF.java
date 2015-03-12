@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: FPDF.java,v 1.10 2008/03/19 17:08:40 ashmodai Exp $
  * (K) 2008 All Rites Reversed -- Reprint what you like.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,7 +36,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Faithful Java port of <a href="http://www.fpdf.org">FPDF for PHP</a>.
@@ -44,7 +43,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * @author Olivier Plathey
  * @author Alan Plum
  * @since 1 Mar 2008
- * @version 1.53 / $Rev$
+ * @version 1.53 / $Revision: 1.10 $
  */
 public abstract class FPDF {
 	/** Character width. Used to be global. */
@@ -237,9 +236,9 @@ public abstract class FPDF {
 	private static final String						revision;
 
 	static {
-		// Some SVN magic to find out the revision of this class
-		String rev = "$Rev$"; //$NON-NLS-1$
-		revision = rev.substring(6, rev.length() - 2);
+		// Some CVS magic to find out the revision of this class
+		String rev = "$Revision: 1.10 $"; //$NON-NLS-1$
+		revision = rev.substring(11, rev.length() - 2);
 	}
 
 	/**
@@ -826,7 +825,7 @@ public abstract class FPDF {
 
 	protected void _putinfo() {
 		this._out("/Producer " //$NON-NLS-1$
-				+ this._textstring("Java FPDF 1.53." //$NON-NLS-1$
+				+ this._textstring("Java FPDF 1.53 / " //$NON-NLS-1$
 						+ revision));
 		if (this.title != null) {
 			this._out("/Title " + this._textstring(this.title)); //$NON-NLS-1$
@@ -1978,7 +1977,7 @@ public abstract class FPDF {
 		float w1 = (w == 0) ? this.w - this.rMargin - this.x : w;
 		Charwidths cw = this.currentFont.getCw();
 		float wmax = (w1 - 2 * this.cMargin) * 1000 / this.fontSize;
-		String s = (txt == null) ? "" : txt.replace("\r", ""); //$NON-NLS-1$//$NON-NLS-2$
+		String s = txt.replace("\r", ""); //$NON-NLS-1$//$NON-NLS-2$
 		int nb = s.length();
 		if ((nb > 0) && (s.charAt(nb - 1) == '\n')) {
 			nb--;
