@@ -29,57 +29,58 @@ import java.util.Properties;
 
 /**
  * Character widths.
- * 
+ *
  * @author Alan Plum
  * @since 4 Mar 2008
  * @version $Revision: 1.3 $
  */
 class Charwidths {
-	private final Properties	props;
 
-	/**
-	 * Constructor. Creates a Charwidths object for a core font.
-	 * 
-	 * @param name
-	 *            name of the character widths file.
-	 * @throws IOException
-	 *             if an error occurred when reading from the file.
-	 */
-	public Charwidths(final String name) throws IOException {
-		InputStream stream = this.getClass().getResourceAsStream(
-				"fonts/" + name + ".widths"); //$NON-NLS-1$//$NON-NLS-2$
-		this.props = new Properties();
-		this.props.load(stream);
-		stream.close();
-	}
+  private final Properties props;
 
-	/**
-	 * Constructor. Creates a Charwidths object from a local file.
-	 * 
-	 * @param file
-	 *            file containing the character widths info.
-	 * @throws IOException
-	 *             if an error occurred when reading from the file.
-	 */
-	public Charwidths(final File file) throws IOException {
-		InputStream stream = new FileInputStream(file);
-		this.props = new Properties();
-		this.props.load(stream);
-		stream.close();
-	}
+  /**
+   * Constructor. Creates a Charwidths object for a core font.
+   *
+   * @param name name of the character widths file.
+   * @throws IOException if an error occurred when reading from the file.
+   */
+  public Charwidths(final String name) throws IOException {
+    String fontWidthResourceName = "/fonts/" + name + ".widths";
+    InputStream stream = Charwidths.class.getResourceAsStream(fontWidthResourceName);
+    if ( stream == null ) {
+      throw new IOException("resource " + fontWidthResourceName + " not found with getResourceAsStream()");
+    }
 
-	/**
-	 * Get the width of the given character.
-	 * 
-	 * @param c
-	 *            a character
-	 * @return the width of that character.
-	 */
-	public int get(final char c) {
-		String str = this.props.getProperty(Integer.valueOf(c).toString());
-		if (str == null) {
-			return 600;
-		}
-		return Integer.parseInt(str);
-	}
+    this.props = new Properties();
+    this.props.load(stream);
+    stream.close();
+  }
+
+  /**
+   * Constructor. Creates a Charwidths object from a local file.
+   *
+   * @param file file containing the character widths info.
+   * @throws IOException if an error occurred when reading from the file.
+   */
+  public Charwidths(final File file) throws IOException {
+    InputStream stream = new FileInputStream(file);
+
+    this.props = new Properties();
+    this.props.load(stream);
+    stream.close();
+  }
+
+  /**
+   * Get the width of the given character.
+   *
+   * @param c a character
+   * @return the width of that character.
+   */
+  public int get(final char c) {
+    String str = this.props.getProperty(Integer.valueOf(c).toString());
+    if (str == null) {
+      return 600;
+    }
+    return Integer.parseInt(str);
+  }
 }
