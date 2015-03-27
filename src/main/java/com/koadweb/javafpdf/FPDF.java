@@ -2761,16 +2761,21 @@ public abstract class FPDF {
 	/** Output a string */
 	public void Text(final float x, final float y, final String txt) {
 		StringBuilder s = new StringBuilder();
-		s.append(String.format(Locale.ENGLISH, "BT %.2f %.2f Td (%s) Tj ET", 
-				Float.valueOf(x * this.k), Float.valueOf((this.h - y) * this.k), this._escape(txt)));
+		
+		if (this.colorFlag) {
+			s.append("q ").append(this.textColor).append(' '); 
+		}
+		
+		s.append(String.format("BT %.2f %.2f Td (%s) Tj ET", x * this.k, (this.h - y) * this.k, this._escape(txt)));
+		
 		if (this.underline && (txt != null)) {
 			s.append(' ').append(this._dounderline(x, y, txt));
 		}
+		
 		if (this.colorFlag) {
-			s.delete(0, s.length());
-			s.append("q ").append(this.textColor) 
-					.append(' ').append(s).append(" Q"); 
+			s.append(" Q");
 		}
+		
 		this._out(s.toString());
 	}
 
