@@ -613,6 +613,7 @@ public abstract class FPDF {
 			image.put("cs", colspace); 
 			image.put("bpc", 8); 
 			image.put("f", "DCTDecode"); 
+			image.put("i", Integer.valueOf(this.images.size() + 1)); 
 			
 			InputStream f = new FileInputStream(file);
 			byte[] data = new byte[f.available()];
