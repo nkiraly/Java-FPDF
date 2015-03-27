@@ -1,8 +1,15 @@
+# 1.53.2 Release
+
+2015-03-27
+
+ * Render JPG images correctly / deterministically by including image index in its info
+ * Actually render text while still respecting text color.
+
 # 1.53.1 Release
 
 2015-03-19
 
-Improve character width loading from resources and error messages when the resource is not found
+ * Improve character width loading from resources and error messages when the resource is not found
 
 
 # 1.53.0 Release
