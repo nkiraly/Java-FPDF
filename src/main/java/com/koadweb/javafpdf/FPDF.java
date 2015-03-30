@@ -21,6 +21,7 @@
  */
 package com.koadweb.javafpdf;
 
+import com.koadweb.javafpdf.util.Compressor;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -37,10 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import javax.imageio.ImageIO;
-
-import com.koadweb.javafpdf.util.Compressor;
 
 /**
  * Faithful Java port of <a href="http://www.fpdf.org">FPDF for PHP</a>.
@@ -1814,6 +1812,7 @@ public abstract class FPDF {
 	 *            link identifier for the image
 	 * @throws IOException
 	 */
+	@SuppressWarnings("fallthrough")
 	public void Image(final String file, final Coordinate coords, final float w, final float h, final ImageType type,
 			final int link) throws IOException {
 		Map<String, Object> info = null;
@@ -1830,12 +1829,20 @@ public abstract class FPDF {
 			} else {
 				type1 = type;
 			}
-			if (ImageType.PNG.equals(type1)) {
-				info = this._parsepng(new File(file));
-			} else if (ImageType.JPEG.equals(type1)) {
-				info = this._parsejpg(new File(file));
-			} else {
-				throw new IOException("Image type not supported."); 
+			File f = new File(file);
+			switch (type1) {
+				case GIF:
+					// gifs: convert to png first
+					ImageIO.write(ImageIO.read(f), "png", f);
+					// fallthrough!
+				case PNG:
+					info = this._parsepng(f);
+					break;
+				case JPEG:
+					info = this._parsejpg(f);
+					break;
+				default:
+					throw new IOException("Image type not supported.");
 			}
 			// FIXME no support for other formats
 			this.images.put(file, info);
