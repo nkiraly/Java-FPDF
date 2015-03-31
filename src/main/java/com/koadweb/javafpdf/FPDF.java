@@ -24,13 +24,15 @@ package com.koadweb.javafpdf;
 import com.koadweb.javafpdf.util.Compressor;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -590,12 +592,12 @@ public abstract class FPDF {
 		}
 	}
 
-	protected Map<String, Object> _parsejpg(final File file) {
+	protected Map<String, Object> _parsejpg(String fileName, byte[] data) {
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(file);
+			img = ImageIO.read(new ByteArrayInputStream(data));
 			
-			Map<String, Object> image = new HashMap<String, Object>();
+			Map<String, Object> image = new HashMap<>();
 			image.put("w", Integer.valueOf(img.getWidth())); 
 			image.put("h", Integer.valueOf(img.getHeight())); 
 			String colspace;
@@ -613,11 +615,9 @@ public abstract class FPDF {
 			image.put("f", "DCTDecode"); 
 			image.put("i", Integer.valueOf(this.images.size() + 1)); 
 			
-			InputStream f = new FileInputStream(file);
-			byte[] data = new byte[f.available()];
-			f.read(data, 0, f.available());
-			f.close();
-			image.put("data", data); 
+			ByteArrayOutputStream boas = new ByteArrayOutputStream();
+			ImageIO.write(img, "jpg", boas);
+			image.put("data", boas.toByteArray()); 
 			return image;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -625,16 +625,15 @@ public abstract class FPDF {
 	}
 	
 	/** Extract info from a PNG file */
-	protected Map<String, Object> _parsepng(final File file) throws IOException {
-		InputStream f = new FileInputStream(file);
-		try {
+	protected Map<String, Object> _parsepng(String fileName, byte[] imageData) throws IOException {
+		try (ByteArrayInputStream f = new ByteArrayInputStream(imageData)) {
 			// Check signature
 			char[] sig = new char[] { 137, 'P', 'N', 'G', 13, 10, 26, 10 };
 			for (int i = 0; i < sig.length; i++) {
 				int in = f.read();
 				char c = (char) in;
 				if (c != sig[i]) {
-					throw new IOException("Not a PNG file: " + file); 
+					throw new IOException("Not a PNG file: " + fileName); 
 				}
 			}
 			this._fread(f, 4);
@@ -644,14 +643,14 @@ public abstract class FPDF {
 				int in = f.read();
 				char c = (char) in;
 				if (c != chunk[i]) {
-					throw new IOException("Not a PNG file: " + file); 
+					throw new IOException("Not a PNG file: " + fileName); 
 				}
 			}
 			int w = this._freadint(f);
 			int h = this._freadint(f);
 			int bpc = f.read();
 			if (bpc > 8) {
-				throw new IOException("16-bit depth not supported: " + file); 
+				throw new IOException("16-bit depth not supported: " + fileName); 
 			}
 			int ct = f.read();
 			String colspace;
@@ -660,18 +659,21 @@ public abstract class FPDF {
 			} else if (ct == 2) {
 				colspace = "DeviceRGB"; 
 			} else if (ct == 3) {
-				colspace = "Indexed"; 
+				colspace = "Indexed";
+			} else if (ct == 6) {
+				// RGBA needs handled separately
+				return _parsepngWithAlpha(fileName, imageData);
 			} else {
-				throw new IOException("Alpha channel not supported: " + file); 
+				throw new IOException("Alpha channel not supported for grayscale PNG images: " + fileName); 
 			}
 			if (f.read() != 0) {
-				throw new IOException("Unknown compression method: " + file); 
+				throw new IOException("Unknown compression method: " + fileName); 
 			}
 			if (f.read() != 0) {
-				throw new IOException("Unknown filter method: " + file); 
+				throw new IOException("Unknown filter method: " + fileName); 
 			}
 			if (f.read() != 0) {
-				throw new IOException("Interlacing not supported: " + file); 
+				throw new IOException("Interlacing not supported: " + fileName); 
 			}
 			this._fread(f, 4);
 			StringBuilder sb = new StringBuilder();
@@ -715,7 +717,7 @@ public abstract class FPDF {
 				}
 			} while (f.available() > 0);
 			if (colspace.equals("Indexed") && (pal == null)) { 
-				throw new IOException("Missing palette in " + file); 
+				throw new IOException("Missing palette in " + fileName); 
 			}
 			Map<String, Object> image = new HashMap<String, Object>();
 			image.put("w", Integer.valueOf(w)); 
@@ -729,9 +731,46 @@ public abstract class FPDF {
 			image.put("data", data); 
 			image.put("i", Integer.valueOf(this.images.size() + 1)); 
 			return image;
-		} finally {
-			f.close();
 		}
+	}
+	
+	/** Parse a PNG file with an alpha channel */
+	protected Map<String, Object> _parsepngWithAlpha(String fileName, byte[] data) throws IOException {
+		BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
+		int width = img.getWidth();
+		int height = img.getHeight();
+		
+		// PNG files with alpha channel can only have 8 or 16 bit depth
+		// we can't handle 16 bits, so that leaves a byte. we only need grayscale for the mask image
+		
+		int[] imgPx = img.getRGB(0, 0, width, height, null, 0, width);
+		int[] maskPx = new int[width*height];
+		
+		// Split alpha channel off into a grayscale image
+		for (int i = 0; i < imgPx.length; i++) {
+			int a = (imgPx[i] >> 24) & 0xFF; // AARRGGBB -> XXXXXXAA -> 000000AA;
+			maskPx[i] = a | a << 8 | a << 16; // 000000AA | 0000AA00 | 00AA0000 -> 00AAAAAA
+			imgPx[i] = imgPx[i] & 0x00FFFFFF; // AARRGGBB -> 00RRGGBB
+		}
+		
+		// out contains the original image, stripped of the alpha channel
+		BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		out.setRGB(0, 0, width, height, imgPx, 0, width);
+		
+		// mask contains the grayscale-converted alpha channel of the original image
+		BufferedImage mask = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+		mask.setRGB(0, 0, width, height, maskPx, 0, width);
+		
+		// attempt to re-parse the image, but without the alpha channel
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(out, "png", baos);
+		Map<String, Object> info = _parsepng(fileName, baos.toByteArray());
+		
+		// attach the alpha mask to the image info for use later on
+		baos.reset();
+		ImageIO.write(mask, "png", baos);
+		info.put("alphaMask", baos.toByteArray());
+		return info;
 	}
 
 	protected void _putcatalog() {
@@ -796,6 +835,11 @@ public abstract class FPDF {
 					+ this.images.get(file).get("w")); 
 			this._out("/Height " 
 					+ this.images.get(file).get("h")); 
+			
+			if (this.images.get(file).containsKey("alphaMask")) {
+				this._out("/SMask " + (Integer)this.images.get("alphaMask-" + file).get("n") + " 0 R");
+			}
+			
 			if (this.images.get(file).get("cs") == "Indexed") {
 				this._out("/ColorSpace [/Indexed /DeviceRGB "
 						+ (((byte[]) this.images.get(file).get("pal")).length / 3 - 1) + " " + (this.n + 1) + " 0 R]");
@@ -1812,9 +1856,15 @@ public abstract class FPDF {
 	 *            link identifier for the image
 	 * @throws IOException
 	 */
-	@SuppressWarnings("fallthrough")
 	public void Image(final String file, final Coordinate coords, final float w, final float h, final ImageType type,
 			final int link) throws IOException {
+		File f = new File(file);
+		Image(file, Files.readAllBytes(f.toPath()), coords, w, h, type, link, false);
+	}
+	
+	@SuppressWarnings("fallthrough")
+	protected void Image(final String file, byte[] data, Coordinate coords, final float w, final float h, final ImageType type,
+			final int link, boolean isMask) throws IOException {
 		Map<String, Object> info = null;
 		if (this.images.get(file) == null) {
 			// First use of image, get info
@@ -1829,17 +1879,19 @@ public abstract class FPDF {
 			} else {
 				type1 = type;
 			}
-			File f = new File(file);
+			
 			switch (type1) {
 				case GIF:
 					// gifs: convert to png first
-					ImageIO.write(ImageIO.read(f), "png", f);
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ImageIO.write(ImageIO.read(new ByteArrayInputStream(data)), "png", baos);
+					data = baos.toByteArray();
 					// fallthrough!
 				case PNG:
-					info = this._parsepng(f);
+					info = this._parsepng(file, data);
 					break;
 				case JPEG:
-					info = this._parsejpg(f);
+					info = this._parsejpg(file, data);
 					break;
 				default:
 					throw new IOException("Image type not supported.");
@@ -1849,6 +1901,17 @@ public abstract class FPDF {
 		} else {
 			info = this.images.get(file);
 		}
+		
+		// if the image has an alpha mask, add it separately
+		if (info.containsKey("alphaMask")) {
+			this.Image("alphaMask-" + file, (byte[])info.get("alphaMask"), new Coordinate(0, 0), 0, 0, ImageType.PNG, 0, true);
+		}
+		
+		// masks are grayscale, regardless of what it claims
+		if (isMask) {
+			info.put("cs", "DeviceGray");
+		}
+		
 		// Automatic width and height calculation if needed
 		float w1 = w;
 		float h1 = h;
@@ -1863,6 +1926,15 @@ public abstract class FPDF {
 			h1 = w * ((Integer) info.get("h")).floatValue() 
 					/ ((Integer) info.get("w")).floatValue(); 
 		}
+		
+		// position the mask off the page so it can't be seen
+		if (isMask) {
+			coords = new Coordinate(
+			  (this.currentOrientation == Orientation.PORTRAIT ? this.fwPt : this.fhPt) + 10,
+				coords.getY()
+			);
+		}
+		
 		this._out(String.format(Locale.ENGLISH,
 				"q %.2f 0 0 %.2f %.2f %.2f cm /I%d Do Q", 
 				Float.valueOf(w1 * this.k), Float.valueOf(h1 * this.k), Float.valueOf(coords.getX() * this.k),
