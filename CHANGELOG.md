@@ -1,3 +1,11 @@
+# 1.54.0 Release
+
+2015-04-01
+
+* GIF image support
+* PNG alpha channel support
+
+
 # 1.53.2 Release
 
 2015-03-27
