@@ -22,8 +22,11 @@
 package com.koadweb.javafpdf;
 
 import com.koadweb.javafpdf.util.Compressor;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,11 +39,18 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import javax.swing.ImageIcon;
+import org.apache.sanselan.ImageReadException;
 
 /**
  * Faithful Java port of <a href="http://www.fpdf.org">FPDF for PHP</a>.
@@ -591,11 +601,13 @@ public abstract class FPDF {
 			}
 		}
 	}
-
+        
 	protected Map<String, Object> _parsejpg(String fileName, byte[] data) {
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new ByteArrayInputStream(data));
+			// Image quality isn't the best this way but it fully supports CMYK and YCCK
+                        JpegReader jpegReader = new JpegReader();
+                        img = jpegReader.readImage(data);
 			
 			Map<String, Object> image = new HashMap<>();
 			image.put("w", Integer.valueOf(img.getWidth())); 
@@ -619,7 +631,7 @@ public abstract class FPDF {
 			ImageIO.write(img, "jpg", boas);
 			image.put("data", boas.toByteArray()); 
 			return image;
-		} catch (IOException e) {
+		} catch (IOException | ImageReadException e) {
 			throw new RuntimeException(e);
 		}
 	}
