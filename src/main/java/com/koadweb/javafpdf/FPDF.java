@@ -600,26 +600,24 @@ public abstract class FPDF {
                         JpegReader jpegReader = new JpegReader();
                         img = jpegReader.readImage(data);
 			
-			Map<String, Object> image = new HashMap<>();
-			image.put("w", Integer.valueOf(img.getWidth())); 
-			image.put("h", Integer.valueOf(img.getHeight())); 
 			String colspace;
-			if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
-				colspace = "DeviceCMYK";
-			} else if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_RGB) {
+                        // Output from jpegReader should always be RGB but still throw just in case it somehow isn't
+			if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_RGB) {
 				colspace = "DeviceRGB";
-			} else if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_GRAY) {
-				colspace = "DeviceGray";
 			} else {
 				throw new IllegalArgumentException("Ungültiges Farbmodell " + img.getColorModel().getColorSpace().getType());
 			}
+                        // 
+                        ByteArrayOutputStream boas = new ByteArrayOutputStream();
+			ImageIO.write(img, "jpg", boas);
+                        // Load image map with img metadata / raw image data
+                        Map<String, Object> image = new HashMap<>();
+                        image.put("w", Integer.valueOf(img.getWidth()));
+			image.put("h", Integer.valueOf(img.getHeight()));
 			image.put("cs", colspace); 
 			image.put("bpc", 8); 
 			image.put("f", "DCTDecode"); 
 			image.put("i", Integer.valueOf(this.images.size() + 1)); 
-			
-			ByteArrayOutputStream boas = new ByteArrayOutputStream();
-			ImageIO.write(img, "jpg", boas);
 			image.put("data", boas.toByteArray()); 
 			return image;
 		} catch (IOException | ImageReadException e) {
