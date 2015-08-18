@@ -601,12 +601,19 @@ public abstract class FPDF {
                         img = jpegReader.readImage(data);
 			
 			String colspace;
-                        // Output from jpegReader should always be RGB but still throw just in case it somehow isn't
-			if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_RGB) {
-				colspace = "DeviceRGB";
-			} else {
-				throw new IllegalArgumentException("Ungültiges Farbmodell " + img.getColorModel().getColorSpace().getType());
-			}
+                        // In some cases ColorSpaces get converted by jpegReader but not always
+                        // 9 - TYPE_CMYK
+                        // 5 - TYPE_RGB
+                        // 6 - TYPE_GRAY
+			if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
+ 				colspace = "DeviceCMYK";
+ 			} else if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_RGB) {
+ 				colspace = "DeviceRGB";
+ 			} else if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_GRAY) {
+ 				colspace = "DeviceGray";
+ 			} else {
+ 				throw new IllegalArgumentException("Ungültiges Farbmodell " + img.getColorModel().getColorSpace().getType());
+ 			}
                         // 
                         ByteArrayOutputStream boas = new ByteArrayOutputStream();
 			ImageIO.write(img, "jpg", boas);
