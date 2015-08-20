@@ -41,6 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.imageio.ImageIO;
+import org.apache.sanselan.ImageReadException;
 
 /**
  * Faithful Java port of <a href="http://www.fpdf.org">FPDF for PHP</a>.
@@ -591,35 +592,42 @@ public abstract class FPDF {
 			}
 		}
 	}
-
+        
 	protected Map<String, Object> _parsejpg(String fileName, byte[] data) {
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new ByteArrayInputStream(data));
+			// Image quality isn't the best this way but it fully supports CMYK and YCCK
+                        JpegReader jpegReader = new JpegReader();
+                        img = jpegReader.readImage(data);
 			
-			Map<String, Object> image = new HashMap<>();
-			image.put("w", Integer.valueOf(img.getWidth())); 
-			image.put("h", Integer.valueOf(img.getHeight())); 
 			String colspace;
+                        // In some cases ColorSpaces get converted by jpegReader but not always
+                        // 9 - TYPE_CMYK
+                        // 5 - TYPE_RGB
+                        // 6 - TYPE_GRAY
 			if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
-				colspace = "DeviceCMYK";
-			} else if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_RGB) {
-				colspace = "DeviceRGB";
-			} else if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_GRAY) {
-				colspace = "DeviceGray";
-			} else {
-				throw new IllegalArgumentException("Ungültiges Farbmodell " + img.getColorModel().getColorSpace().getType());
-			}
+ 				colspace = "DeviceCMYK";
+ 			} else if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_RGB) {
+ 				colspace = "DeviceRGB";
+ 			} else if (img.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_GRAY) {
+ 				colspace = "DeviceGray";
+ 			} else {
+ 				throw new IllegalArgumentException("Ungültiges Farbmodell " + img.getColorModel().getColorSpace().getType());
+ 			}
+                        // 
+                        ByteArrayOutputStream boas = new ByteArrayOutputStream();
+			ImageIO.write(img, "jpg", boas);
+                        // Load image map with img metadata / raw image data
+                        Map<String, Object> image = new HashMap<>();
+                        image.put("w", Integer.valueOf(img.getWidth()));
+			image.put("h", Integer.valueOf(img.getHeight()));
 			image.put("cs", colspace); 
 			image.put("bpc", 8); 
 			image.put("f", "DCTDecode"); 
 			image.put("i", Integer.valueOf(this.images.size() + 1)); 
-			
-			ByteArrayOutputStream boas = new ByteArrayOutputStream();
-			ImageIO.write(img, "jpg", boas);
 			image.put("data", boas.toByteArray()); 
 			return image;
-		} catch (IOException e) {
+		} catch (IOException | ImageReadException e) {
 			throw new RuntimeException(e);
 		}
 	}
