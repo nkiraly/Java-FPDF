@@ -1910,11 +1910,6 @@ public abstract class FPDF {
 			info = this.images.get(file);
 		}
 		
-		// if the image has an alpha mask, add it separately
-		if (info.containsKey("alphaMask")) {
-			this.Image("alphaMask-" + file, (byte[])info.get("alphaMask"), new Coordinate(0, 0), 0, 0, ImageType.PNG, 0, true);
-		}
-		
 		// masks are grayscale, regardless of what it claims
 		if (isMask) {
 			info.put("cs", "DeviceGray");
@@ -1949,6 +1944,13 @@ public abstract class FPDF {
 				Float.valueOf((this.h - (coords.getY() + h1)) * this.k), info.get("i"))); 
 		if (link > 0) {
 			this.Link(coords.getX(), coords.getY(), w1, h1, link);
+		}
+                
+                // if the image has an alpha mask, add it separately
+                // Also note, the alphaMask must be applied AFTER the call to _out()
+                // otherwise you'll get corrupted PDFs and be really confused
+		if (info.containsKey("alphaMask")) {
+			this.Image("alphaMask-" + file, (byte[])info.get("alphaMask"), new Coordinate(0, 0), 0, 0, ImageType.PNG, 0, true);
 		}
 	}
 
