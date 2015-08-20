@@ -3,6 +3,7 @@
 2015-08-20
 
 * @bstoots Add JPEG Add CMYK and YCCK support https://github.com/nkiraly/Java-FPDF/pull/3
+* @bstoots Fix Image alpha channel processing and packing https://github.com/nkiraly/Java-FPDF/pull/4
 
 
 # 1.54.0 Release
