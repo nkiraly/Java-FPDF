@@ -6,7 +6,7 @@
   <version>1.6.0</version>
   <packaging>jar</packaging>
   <name>Java FPDF</name>
-  <description></description>
+  <description>Java port of PHP FPDF library http://www.fpdf.org/</description>
   
   <developers>
     <developer>
