@@ -1,30 +1,23 @@
-# 1.55.0 Release
+# 1.55.1 Release  2015-08-25
+* @bstoots Fix sequence in _putimages() by writing values back to underlying map https://github.com/nkiraly/Java-FPDF/pull/5
 
-2015-08-20
 
+# 1.55.0 Release  2015-08-20
 * @bstoots Add JPEG Add CMYK and YCCK support https://github.com/nkiraly/Java-FPDF/pull/3
 * @bstoots Fix Image alpha channel processing and packing https://github.com/nkiraly/Java-FPDF/pull/4
 
 
-# 1.54.0 Release
-
-2015-04-01
-
+# 1.54.0 Release  2015-04-01
 * @austinhyde GIF image support https://github.com/nkiraly/Java-FPDF/pull/2
 * @austinhyde PNG alpha channel support https://github.com/nkiraly/Java-FPDF/pull/2
 
 
-# 1.53.2 Release
-
-2015-03-27
-
+# 1.53.2 Release  2015-03-27
  * @austinhyde Render JPG images correctly / deterministically by including image index in its info https://github.com/nkiraly/Java-FPDF/pull/1
  * @austinhyde Actually render text while still respecting text color https://github.com/nkiraly/Java-FPDF/pull/1
 
-# 1.53.1 Release
 
-2015-03-19
-
+# 1.53.1 Release  2015-03-19
  * @nkiraly Improve character width loading from resources and error messages when the resource is not found
 
 
