@@ -1,3 +1,7 @@
+# 1.6.0 Release  YYYY-MM-DD
+* Update to BSD 2-clause license
+
+
 # 1.55.1 Release  2015-08-25
 * @bstoots Fix sequence in _putimages() by writing values back to underlying map https://github.com/nkiraly/Java-FPDF/pull/5
 
