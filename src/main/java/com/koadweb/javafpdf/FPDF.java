@@ -36,9 +36,11 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import org.apache.sanselan.ImageReadException;
@@ -832,70 +834,80 @@ public abstract class FPDF {
 	}
 
 	protected void _putimages() {
-		String filter = (this.compress) ? "/Filter /FlateDecode " : ""; 
-		// while(list(file,info)=each(this.images))
-		for (String file : this.images.keySet()) {
-			this._newobj();
-			this.images.get(file).put("n", Integer.valueOf(this.n)); 
-			this._out("<</Type /XObject"); 
-			this._out("/Subtype /Image"); 
-			this._out("/Width " 
-					+ this.images.get(file).get("w")); 
-			this._out("/Height " 
-					+ this.images.get(file).get("h")); 
-			
-			if (this.images.get(file).containsKey("alphaMask")) {
-				this._out("/SMask " + (Integer)this.images.get("alphaMask-" + file).get("n") + " 0 R");
-			}
-			
-			if (this.images.get(file).get("cs") == "Indexed") {
-				this._out("/ColorSpace [/Indexed /DeviceRGB "
-						+ (((byte[]) this.images.get(file).get("pal")).length / 3 - 1) + " " + (this.n + 1) + " 0 R]");
-			} else {
-				this._out("/ColorSpace /" + this.images.get(file).get("cs"));
-				if (this.images.get(file).get("cs") == "DeviceCMYK") {
-					this._out("/Decode [1 0 1 0 1 0 1 0]");
-				}
-			}
-			this._out("/BitsPerComponent " + this.images.get(file).get("bpc"));
-			if (this.images.get(file).get("f") != null) {
-				this._out("/Filter /" + this.images.get(file).get("f"));
-			}
-			if (this.images.get(file).get("parms") != null) {
-				this._out((String) this.images.get(file).get("parms"));
-			}
-			if (this.images.get(file).get("trns") != null) {
-				byte[] trnsarr = ((byte[]) this.images.get(file).get("trns"));
-				StringBuilder trns = new StringBuilder();
-				trns.append("/Mask [ "); 
-				for (int i = 0; i < trnsarr.length; i++) {
-					trns.append(_stringify(trnsarr));
-				}
-				trns.append(']');
-				this._out(trns.toString());
-			}
-			this._out("/Length " + ((byte[]) (this.images.get(file).get("data"))).length + ">>");
-			try {
-				this._putstream(new String((byte[]) this.images.get(file).get("data"), "ISO-8859-1"));  
-			} catch (UnsupportedEncodingException e) {
-				this._putstream(new String((byte[]) this.images.get(file).get("data"))); 
-			}
-			this.images.get(file).put("data", null);
-			this._out("endobj");
-			// Palette
-			if (this.images.get(file).get("cs") == "Indexed") {
-				this._newobj();
-				byte[] pal = (byte[]) this.images.get(file).get("pal");
-				pal = (this.compress) ? gzcompress(pal) : pal;
-				this._out("<<" + filter + "/Length " + pal.length + ">>");
-				try {
-					this._putstream(new String(pal, "ISO-8859-1"));  
-				} catch (UnsupportedEncodingException e) {
-					this._putstream(new String(pal)); 
-				}
-				this._out("endobj");
-			}
-		}
+          String filter = (this.compress) ? "/Filter /FlateDecode " : ""; 
+          // Yikes, this.images: Map<String, Map<String, Object>>
+          Iterator<Entry<String, Map<String, Object>>> it = this.images.entrySet().iterator();
+          while (it.hasNext()) {
+            Map.Entry<String, Map<String, Object>> imageEntry = it.next();
+            Map<String, Object> image = imageEntry.getValue();
+            // Have to call _newobj() before other stuff.  this.n gets incremented in here
+            this._newobj();
+            // Don't miss this, we set the image order in here.  If this doesn't get set 
+            // weird stuff will happen later on such as corrupted PDFs.  Also note that it
+            // needs updated in the underlying Map or it will be missing later on _putresources happens
+            image.put("n", this.n);
+            this._out("<</Type /XObject");
+            this._out("/Subtype /Image");
+            this._out("/Width " + image.get("w"));
+            this._out("/Height " + image.get("h"));
+            // 
+            if (images.containsKey("alphaMask")) {
+              this._out("/SMask " + image.get("n") + " 0 R");
+            }
+            // 
+            if (image.get("cs") == "Indexed") {
+              // This used to be (this.n + 1) instead of just image.get("n").  Not really sure if this will cause problems
+              // but the old way didn't make much sense to me.  Cross that bridge when we get there I suppose.
+              this._out("/ColorSpace [/Indexed /DeviceRGB " + (((byte[]) image.get("pal")).length / 3 - 1) + " " + image.get("n") + " 0 R]");
+            } else {
+              this._out("/ColorSpace /" + image.get("cs"));
+              if (image.get("cs") == "DeviceCMYK") {
+                this._out("/Decode [1 0 1 0 1 0 1 0]");
+              }
+            }
+            // 
+            this._out("/BitsPerComponent " + image.get("bpc"));
+            if (image.get("f") != null) {
+              this._out("/Filter /" + image.get("f"));
+            }
+            if (image.get("parms") != null) {
+              this._out((String) image.get("parms"));
+            }
+            if (image.get("trns") != null) {
+              byte[] trnsarr = ((byte[]) image.get("trns"));
+              StringBuilder trns = new StringBuilder();
+              trns.append("/Mask [ "); 
+              for (int i = 0; i < trnsarr.length; i++) {
+                trns.append(_stringify(trnsarr));
+              }
+              trns.append(']');
+              this._out(trns.toString());
+            }
+            this._out("/Length " + ((byte[]) (image.get("data"))).length + ">>");
+            try {
+              this._putstream(new String((byte[]) image.get("data"), "ISO-8859-1"));  
+            } catch (UnsupportedEncodingException e) {
+              this._putstream(new String((byte[]) image.get("data"))); 
+            }
+            image.put("data", null);
+            this._out("endobj");
+            // Palette
+            if (image.get("cs") == "Indexed") {
+              this._newobj();
+              byte[] pal = (byte[]) image.get("pal");
+              pal = (this.compress) ? gzcompress(pal) : pal;
+              this._out("<<" + filter + "/Length " + pal.length + ">>");
+              try {
+                this._putstream(new String(pal, "ISO-8859-1"));  
+              } catch (UnsupportedEncodingException e) {
+                this._putstream(new String(pal)); 
+              }
+              this._out("endobj");
+            }
+            // Set object back into underlying data structure so any changes are
+            // available elsewhere in future processing logic 
+            imageEntry.setValue(image);
+          }
 	}
 
 	private byte[] gzcompress(byte[] pal) {
@@ -1139,16 +1151,16 @@ public abstract class FPDF {
 	}
 
 	protected void _putxobjectdict() {
-		StringBuilder s = new StringBuilder();
-		for (Map<String, Object> image : this.images.values()) {
-			s.append("/I"); 
-			s.append(image.get("i")); 
-			s.append(' ');
-			s.append(image.get("n")); 
-			s.append(" 0 R"); 
-			this._out(s.toString());
-			s.delete(0, s.length());
-		}
+          StringBuilder s = new StringBuilder();
+          for (Map<String, Object> image : this.images.values()) {
+            s.append("/I");
+            s.append(image.get("i"));
+            s.append(' ');
+            s.append(image.get("n"));
+            s.append(" 0 R");
+            this._out(s.toString());
+            s.delete(0, s.length());
+          }
 	}
 
 	protected String _textstring(final String s) {
