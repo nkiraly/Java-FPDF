@@ -1,4 +1,4 @@
-This software is licensed under the BSD (2 Clause) license.
+This Java FPDF software is licensed under the BSD (2 Clause) license.
 http://opensource.org/licenses/BSD-2-Clause
 
 Copyright (c) 2015, Nicholas J Kiraly, All rights reserved.
